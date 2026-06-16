@@ -1,0 +1,118 @@
+# Builds the Migration Tools into a .unitypackage and publishes it as a GitHub Release.
+# Modeled on the screen-share-tool packaging workflow.
+
+name: Migration Tools — Package Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Assets/Migration Tools/**'
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release tag (auto-generated if empty)'
+        required: false
+        type: string
+      release_notes:
+        description: 'Extra notes appended to the release body (optional)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    name: Build package and publish release
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'unreality3d-platform'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-migration-tools-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-migration-tools-
+
+      - name: Export .unitypackage with Unity
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: auto
+          buildMethod: U3D.Migration.Editor.MigrationPackageExporter.ExportPackageCommandLine
+          manualExit: true
+
+      - name: Verify generated package
+        run: |
+          PACKAGE=$(find Build -name "*.unitypackage" -print -quit 2>/dev/null)
+          if [ -n "$PACKAGE" ]; then
+            size=$(stat -c%s "$PACKAGE")
+            echo "Package found: $PACKAGE ($((size / 1024))KB)"
+          else
+            echo "ERROR: No .unitypackage found in Build/"
+            exit 1
+          fi
+
+      - name: Determine release tag
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version_tag }}" ]; then
+            TAG="${{ github.event.inputs.version_tag }}"
+          else
+            TAG="release-$(date +%m-%d-%y-%H-%M-%S)"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Build release notes
+        id: notes
+        run: |
+          cat > release_notes.md << 'EOF'
+          # Migration Tools
+
+          Editor tools for cleaning up missing scripts, broken references, and third-party
+          Visual Scripting graphs when migrating a Unity project from another platform.
+
+          ## Install
+
+          1. Download `MigrationTools.unitypackage` below.
+          2. In Unity: **Assets > Import Package > Custom Package**, choose the file, import.
+          3. Open the tools from **Tools > Unreality3D > Migration Tools**.
+
+          ## Notes
+
+          - Works in Unity 6.
+          - The two Visual Scripting cleanup tools need the Unity Visual Scripting package
+            (`com.unity.visualscripting`). Projects coming from platforms that used visual
+            scripting usually already have it. If it is missing, those two tools show a note
+            and everything else still works.
+
+          The full walkthrough is on the project page.
+          EOF
+
+          if [ -n "${{ github.event.inputs.release_notes }}" ]; then
+            printf '\n%s\n' "${{ github.event.inputs.release_notes }}" >> release_notes.md
+          fi
+
+          echo "body<<DELIMITER" >> $GITHUB_OUTPUT
+          cat release_notes.md >> $GITHUB_OUTPUT
+          echo "DELIMITER" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          body: ${{ steps.notes.outputs.body }}
+          files: Build/*.unitypackage
+          draft: false
+          prerelease: false
