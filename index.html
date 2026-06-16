@@ -5,300 +5,363 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Migration Tools — Unreality3D</title>
 <meta name="description" content="Free, open-source Unity editor tools for cleaning up missing scripts, broken references, and third-party Visual Scripting graphs when moving a project from one platform to another.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --ink: #1d1b2e;
-        --ink-soft: #2a2740;
-        --page: #f3f2f7;
-        --card: #ffffff;
-        --text: #25232f;
-        --muted: #5d5a6e;
-        --accent: #4b3fd1;
-        --accent-hover: #3c31b0;
-        --line: #e4e2ee;
-        --red: #e0483f;
-        --amber: #c9871a;
-        --blue: #3f78d1;
-        --display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-        font-family: var(--body);
-        line-height: 1.65;
-        color: var(--text);
-        background: var(--page);
-        -webkit-font-smoothing: antialiased;
-    }
+:root {
+    --primary-blue: #2563eb;
+    --primary-purple: #7c3aed;
+    --accent-cyan: #06b6d4;
+    --accent-orange: #f59e0b;
+    --success-green: #10b981;
+    --warning-yellow: #d97706;
+    --dark-bg: #0f172a;
+    --medium-bg: #1e293b;
+    --light-bg: #f8fafc;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+    --text-white: #ffffff;
+    --tag-script: #dc2626;
+    --tag-ref: #d97706;
+    --tag-placeholder: #2563eb;
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
 
-    .wrap {
-        max-width: 1040px;
-        margin: 0 auto;
-        padding: 0 1.5rem;
-    }
+body {
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--light-bg);
+    -webkit-font-smoothing: antialiased;
+}
 
-    a { color: var(--accent); }
-    a:hover { color: var(--accent-hover); }
+a { color: var(--primary-blue); }
+a:hover { color: var(--primary-purple); }
+:focus-visible { outline: 3px solid var(--accent-cyan); outline-offset: 2px; border-radius: 4px; }
 
-    :focus-visible {
-        outline: 3px solid var(--blue);
-        outline-offset: 2px;
-        border-radius: 4px;
-    }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.prose-narrow { max-width: 820px; }
 
-    /* Hero */
-    .hero {
-        background: var(--ink);
-        color: #fff;
-        padding: 4.5rem 0 4rem;
-    }
+/* Header */
+.header {
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--medium-bg) 50%, var(--primary-blue) 100%);
+    color: var(--text-white);
+    position: relative;
+    overflow: hidden;
+}
+.header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3.5rem 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+.eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-cyan);
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+}
+.header-title {
+    font-size: clamp(2.2rem, 5vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--text-white), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.tricolor {
+    display: flex;
+    width: 132px;
+    height: 6px;
+    margin: 1.3rem auto 1.5rem;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.tricolor span { flex: 1; }
+.tricolor .r { background: var(--tag-script); }
+.tricolor .y { background: var(--tag-ref); }
+.tricolor .b { background: var(--tag-placeholder); }
+.header-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    line-height: 1.7;
+    max-width: 62ch;
+    margin: 0 auto;
+}
+.header-fine {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-top: 1.3rem;
+}
 
-    .eyebrow {
-        font-size: 0.78rem;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: #b6b2d6;
-        margin-bottom: 1rem;
-    }
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.9rem 1.9rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+    color: var(--text-white);
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6);
+    color: var(--text-white);
+}
+.btn-secondary {
+    background: transparent;
+    color: var(--text-white);
+    border-color: var(--accent-cyan);
+}
+.btn-secondary:hover {
+    background: var(--accent-cyan);
+    color: var(--dark-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+}
+.btn-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.8rem; }
 
-    .hero h1 {
-        font-family: var(--display);
-        font-weight: 700;
-        font-size: clamp(2.6rem, 6vw, 4rem);
-        line-height: 1.04;
-        letter-spacing: -0.01em;
-    }
+/* Sections */
+.section { padding: 3.5rem 0; }
+.section-title {
+    text-align: center;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.prose { margin: 0 auto; }
+.prose p { margin-bottom: 1.1rem; color: var(--text-secondary); }
+.prose p:last-child { margin-bottom: 0; }
+.prose strong { color: var(--text-primary); }
 
-    .tricolor {
-        display: flex;
-        width: 132px;
-        height: 7px;
-        margin: 1.4rem 0 1.6rem;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    .tricolor span { flex: 1; }
-    .tricolor .r { background: var(--red); }
-    .tricolor .y { background: var(--amber); }
-    .tricolor .b { background: var(--blue); }
+/* Cards */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 2rem;
+    margin-top: 2.5rem;
+}
+.feature-card {
+    background: #fff;
+    padding: 2.2rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-purple), var(--accent-cyan));
+}
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+.feature-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--text-primary); }
+.feature-description { color: var(--text-secondary); line-height: 1.7; }
+.feature-note { margin-top: 0.8rem; font-size: 0.88rem; color: var(--text-light); font-style: italic; }
 
-    .hero p.lead {
-        font-size: 1.2rem;
-        color: #dddaf0;
-        max-width: 60ch;
-    }
+/* Tags */
+.tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 0.9rem;
+    color: #fff;
+}
+.tag-scan { background: linear-gradient(90deg, var(--tag-script) 0 33%, var(--tag-ref) 33% 66%, var(--tag-placeholder) 66% 100%); }
+.tag-script { background: var(--tag-script); }
+.tag-ref { background: var(--tag-ref); }
+.tag-vs { background: var(--medium-bg); }
 
-    .cta-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.9rem;
-        margin-top: 2.2rem;
-        align-items: center;
-    }
+/* Code */
+code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: #eef0f3;
+    padding: 0.12rem 0.4rem;
+    border-radius: 5px;
+    color: var(--medium-bg);
+    word-break: break-word;
+}
+pre {
+    background: var(--dark-bg);
+    color: #e2e8f0;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0.75rem 0 0.25rem;
+    font-family: var(--font-mono);
+}
+pre code { background: none; padding: 0; color: inherit; font-size: inherit; word-break: normal; white-space: pre; }
+.code-download { margin: 0 0 1.5rem; font-size: 0.9rem; }
 
-    .btn {
-        display: inline-block;
-        font-weight: 600;
-        text-decoration: none;
-        border-radius: 9px;
-        padding: 0.85rem 1.5rem;
-        transition: transform 0.15s ease, background 0.15s ease;
-    }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-hover); color: #fff; }
-    .btn-ghost {
-        background: transparent;
-        color: #fff;
-        border: 1px solid rgba(255,255,255,0.35);
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,0.08); color: #fff; }
+/* Lists */
+ol.steps, ul.bullets, ul.scope { margin: 0.5rem 0 1rem 1.5rem; color: var(--text-secondary); max-width: 70ch; }
+ol.steps li, ul.bullets li, ul.scope li { margin-bottom: 0.6rem; }
+ol.steps strong, ul.bullets strong { color: var(--text-primary); }
 
-    .hero .meta {
-        margin-top: 1.4rem;
-        font-size: 0.92rem;
-        color: #aaa6c9;
-    }
+/* Callout / disclaimer */
+.callout {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-left: 4px solid var(--accent-cyan);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+    max-width: 70ch;
+    color: var(--text-secondary);
+    font-size: 0.96rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+.disclaimer { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 1rem 1.25rem; margin: 2rem 0; }
+.disclaimer h3 { color: var(--warning-yellow); margin-bottom: 0.4rem; font-size: 1.05rem; }
+.disclaimer p { color: #7c4a14; }
 
-    /* Sections */
-    section { padding: 3.6rem 0; }
-    section + section { border-top: 1px solid var(--line); }
+/* Download CTA (used on the screen-share page) */
+.download-cta {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 2.2rem 1.5rem;
+    text-align: center;
+    margin: 2.5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+.download-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-purple), var(--accent-cyan));
+}
+.download-cta h2 { margin-bottom: 1rem; color: var(--text-primary); font-size: 1.5rem; font-weight: 700; }
+.download-note { color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem; }
+.divider { border: none; border-top: 1px solid #e2e6ea; margin: 2.5rem 0 0; }
 
-    h2 {
-        font-family: var(--display);
-        font-weight: 600;
-        font-size: 1.7rem;
-        letter-spacing: -0.01em;
-        margin-bottom: 1.2rem;
-        color: var(--ink);
-    }
+/* Long-form doc text (used on the screen-share page) */
+.doc h2 { color: var(--text-primary); font-size: 1.6rem; font-weight: 700; margin-bottom: 0.75rem; padding-top: 0.5rem; }
+.doc h3 { color: var(--text-primary); font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+.doc p { color: var(--text-secondary); margin-bottom: 0.75rem; }
+.doc strong { color: var(--text-primary); }
 
-    .prose p { margin-bottom: 1.1rem; max-width: 68ch; color: var(--text); }
-    .prose p:last-child { margin-bottom: 0; }
+/* Footer */
+.footer { background: var(--medium-bg); color: var(--text-white); padding: 2.2rem 0; text-align: center; margin-top: 3rem; }
+.footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.footer-content p { margin: 0.4rem 0; opacity: 0.85; font-size: 0.92rem; }
+.repo-link { color: #74b9ff; text-decoration: none; }
+.repo-link:hover { text-decoration: underline; }
 
-    /* Tool cards */
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.4rem;
-    }
-
-    .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 1.6rem;
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .tag {
-        display: inline-block;
-        font-size: 0.74rem;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        padding: 0.22rem 0.6rem;
-        border-radius: 999px;
-        margin-bottom: 0.9rem;
-        color: #fff;
-    }
-    .tag-scan {
-        background: linear-gradient(90deg, var(--red) 0 33%, var(--amber) 33% 66%, var(--blue) 66% 100%);
-    }
-    .tag-red { background: var(--red); }
-    .tag-amber { background: var(--amber); }
-    .tag-vs { background: var(--ink-soft); }
-
-    .card h3 {
-        font-family: var(--display);
-        font-weight: 600;
-        font-size: 1.22rem;
-        margin-bottom: 0.55rem;
-        color: var(--ink);
-    }
-    .card p { color: var(--muted); font-size: 0.98rem; }
-    .card .note {
-        margin-top: 0.8rem;
-        font-size: 0.86rem;
-        color: var(--muted);
-        font-style: italic;
-    }
-
-    /* Install */
-    ol.steps {
-        max-width: 68ch;
-        margin: 0 0 1.4rem 1.2rem;
-        padding: 0;
-    }
-    ol.steps li { margin-bottom: 0.7rem; padding-left: 0.3rem; }
-
-    .callout {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 4px solid var(--blue);
-        border-radius: 10px;
-        padding: 1.1rem 1.3rem;
-        max-width: 68ch;
-        color: var(--muted);
-        font-size: 0.95rem;
-    }
-
-    code {
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-        font-size: 0.88em;
-        background: #ece9f6;
-        padding: 0.1rem 0.4rem;
-        border-radius: 5px;
-        color: var(--ink);
-    }
-
-    /* Platform */
-    .platform { background: #ecebf3; }
-    .platform .wrap { display: block; }
-
-    /* Footer */
-    footer {
-        background: var(--ink);
-        color: #cecbe6;
-        padding: 2.4rem 0;
-        font-size: 0.92rem;
-    }
-    footer a { color: #fff; }
-    footer .foot-links { margin-bottom: 0.6rem; }
-    footer .foot-links a { margin-right: 1.4rem; }
-
-    @media (prefers-reduced-motion: no-preference) {
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(29,27,46,0.10);
-        }
-        .btn-primary:hover { transform: translateY(-2px); }
-    }
+@media (max-width: 768px) {
+    .header-container { padding: 2.5rem 1.5rem; }
+    .container { padding: 0 1.5rem; }
+    .feature-card { padding: 1.8rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+    .feature-card:hover, .btn:hover { transform: none; }
+}
 </style>
 </head>
 <body>
 
-<header class="hero">
-    <div class="wrap">
+<header class="header">
+    <div class="header-container">
         <div class="eyebrow">Open source · Unity 6</div>
-        <h1>Migration Tools</h1>
+        <h1 class="header-title">Migration Tools</h1>
         <div class="tricolor"><span class="r"></span><span class="y"></span><span class="b"></span></div>
-        <p class="lead">Editor tools for cleaning up missing scripts, broken references, and third-party Visual Scripting graphs when you move a Unity project from one platform to another.</p>
-        <div class="cta-row">
+        <p class="header-subtitle">Editor tools for cleaning up missing scripts, broken references, and third-party Visual Scripting graphs when you move a Unity project from one platform to another.</p>
+        <div class="btn-row">
             <a class="btn btn-primary" href="https://github.com/unreality3d-platform/migration-tools/releases/latest/download/MigrationTools.unitypackage">Download the latest .unitypackage</a>
-            <a class="btn btn-ghost" href="https://github.com/unreality3d-platform/migration-tools">View on GitHub</a>
+            <a class="btn btn-secondary" href="https://github.com/unreality3d-platform/migration-tools">View on GitHub</a>
         </div>
-        <p class="meta">Free and MIT licensed. Works in Unity 6.</p>
+        <p class="header-fine">Free and MIT licensed. Works in Unity 6.</p>
     </div>
 </header>
 
 <main>
-    <section class="why">
-        <div class="wrap prose">
-            <h2>Why these exist</h2>
-            <p>When a 3D content platform shuts down, or drops the features you built on, you are often left with a Unity project full of that platform's proprietary scripts. They throw errors all over the console, and a published build can load to a black screen because of them. Cleaning that up by hand, object by object, is slow and easy to get wrong.</p>
+    <section class="section">
+        <div class="container prose-narrow prose">
+            <h2 class="section-title">Why these exist</h2>
+            <p>When a 3D platform shuts down, or drops the features you built on, you are often left with a Unity project full of that platform's proprietary scripts. They throw errors all over the console, and a published build can load to a black screen because of them. Cleaning that up by hand, object by object, is slow and easy to get wrong.</p>
             <p>These tools find what's broken, mark it so you can see exactly where it was before you remove anything, and clear out the parts that only ever worked on the old platform. The point is to get you back to a project you can actually work in, without starting from scratch.</p>
-            <p>This is not a magic port. Proprietary hooks that a platform embedded throughout a project can't all be untangled automatically. What these tools do is clean up what's left and save you real time, and they get better as more projects come through them.</p>
-            <p>They come from the Unreality3D Creator Dashboard, which comes built in to the free <a href="https://unreality3d.com/">Unreality3D</a> template Unity project. This is the same set, packaged on its own so you can run them in any Unity project.</p>
+            <p>This is not a magic port. Proprietary hooks that a platform embedded throughout a project can't all be untangled automatically. What these tools do is clean up a lot of the usual barriers and save time hunting.</p>
+            <p>They come from the Creator Dashboard inside Unreality3D, where I use them on my own projects, packaged here on their own so you can run them in any Unity project. There's more on the platform below.</p>
         </div>
     </section>
 
-    <section class="tools">
-        <div class="wrap">
-            <h2>What's inside</h2>
-            <div class="grid">
-                <div class="card">
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">What's inside</h2>
+            <div class="features-grid">
+                <div class="feature-card">
                     <span class="tag tag-scan">See it first</span>
-                    <h3>Scan and highlight problems</h3>
-                    <p>Before you change anything, light up every problem object right in the Scene view, color coded so nothing is a guess. Red is a missing script, yellow is a missing reference, blue is a placeholder. One button also selects them all in the Hierarchy and tells you how many it found.</p>
+                    <h3 class="feature-title">Scan and highlight problems</h3>
+                    <p class="feature-description">Before you change anything, light up every problem object right in the Scene view, color coded so nothing is a guess. Red is a missing script, yellow is a missing reference, blue is a placeholder. One button also selects them all in the Hierarchy and tells you how many it found.</p>
                 </div>
-                <div class="card">
-                    <span class="tag tag-red">Missing scripts</span>
-                    <h3>Missing scripts</h3>
-                    <p>Replace missing scripts with visible placeholder components, so you can see where each one was before you decide what to do with it. When you're ready, remove the placeholders, or clear missing scripts straight out of your scenes and prefabs.</p>
+                <div class="feature-card">
+                    <span class="tag tag-script">Missing scripts</span>
+                    <h3 class="feature-title">Missing scripts</h3>
+                    <p class="feature-description">Replace missing scripts with visible placeholder components, so you can see where each one was before you decide what to do with it. When you're ready, remove the placeholders, or clear missing scripts straight out of your scenes and prefabs.</p>
                 </div>
-                <div class="card">
-                    <span class="tag tag-amber">Missing references</span>
-                    <h3>Missing references</h3>
-                    <p>Find object references that went missing inside components that still exist, track them with a placeholder, and jump straight to them in the Hierarchy to rewire. Clear the placeholders when you're done.</p>
+                <div class="feature-card">
+                    <span class="tag tag-ref">Missing references</span>
+                    <h3 class="feature-title">Missing references</h3>
+                    <p class="feature-description">Find object references that went missing inside components that still exist, track them with a placeholder, and jump straight to them in the Hierarchy to rewire. Clear the placeholders when you're done.</p>
                 </div>
-                <div class="card">
+                <div class="feature-card">
                     <span class="tag tag-vs">Visual Scripting</span>
-                    <h3>Broken Visual Scripting graphs</h3>
-                    <p>Clear Visual Scripting graphs that are full of another platform's node types, the kind that cause deserialization errors and broken builds. It works on the open scene and across a whole folder of imported assets and prefabs in one pass, and it clears the broken graphs without deleting your GameObjects.</p>
-                    <p class="note">Set up for Spatial out of the box. Adding another platform is a one-line change in the code, using the prefix shown in the red "Script Missing" nodes.</p>
+                    <h3 class="feature-title">Broken Visual Scripting graphs</h3>
+                    <p class="feature-description">Clear Visual Scripting graphs that are full of another platform's node types, the kind that cause deserialization errors and broken builds. It works on the open scene and across a whole folder of imported assets and prefabs in one pass, and it clears the broken graphs without deleting your GameObjects.</p>
+                    <p class="feature-note">Set up for Spatial out of the box. Adding another platform is a one-line change in the code, using the prefix shown in the red "Script Missing" nodes.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="install">
-        <div class="wrap">
-            <h2>Install</h2>
+    <section class="section">
+        <div class="container prose-narrow">
+            <h2 class="section-title">Install</h2>
             <ol class="steps">
                 <li>Download the latest <a href="https://github.com/unreality3d-platform/migration-tools/releases/latest/download/MigrationTools.unitypackage">MigrationTools.unitypackage</a>.</li>
                 <li>In Unity, go to <strong>Assets &gt; Import Package &gt; Custom Package</strong>, pick the file, and import.</li>
@@ -310,23 +373,27 @@
         </div>
     </section>
 
-    <section class="platform">
-        <div class="wrap prose">
-            <h2>Where these come from</h2>
-            <p>Migration Tools come out of Unreality3D, a free Unity 6 publishing platform I build as a creator, for creators. If the platform you left took your interactivity with it, the Creator Dashboard is intended to give a lot of it back without code, things like grabbing, climbing, and riding, along with multiplayer and a way to share your work at a real web address.</p>
-            <p>If that sounds useful, you can take a look at <a href="https://unreality3d.com">unreality3d.com</a>.</p>
+    <section class="section">
+        <div class="container prose-narrow prose">
+            <h2 class="section-title">What is Unreality3D?</h2>
+            <p>Unreality3D is a free platform for publishing interactive 3D and XR experiences to the open web. You build your world in Unity, add interactivity from an in-editor dashboard without writing code, and publish it to your own web address, like <strong>unreality3d.com/yourname/yourproject</strong>. It runs in the browser on desktop, mobile, and in-browser VR, with multiplayer built in.</p>
+            <p>It's built by a creator, for creators, around one idea: you keep what you make. Your project lives in your own repository, the interactivity tools work whether or not you publish through the platform, and nothing locks up your work or your audience.</p>
+            <p>So if the platform you're leaving took your interactivity with it, the Creator Dashboard is intended to hand a lot of it back, things like grabbing, climbing, riding, and triggers, ready to drop onto your objects. It's the same dashboard these migration tools came from.</p>
+            <div class="btn-row">
+                <a class="btn btn-primary" href="https://unreality3d.com">Explore Unreality3D</a>
+            </div>
         </div>
     </section>
 </main>
 
-<footer>
-    <div class="wrap">
-        <div class="foot-links">
-            <a href="https://github.com/unreality3d-platform/migration-tools">GitHub</a>
-            <a href="https://github.com/unreality3d-platform/migration-tools/releases/latest">Latest release</a>
-            <a href="https://unreality3d.com">unreality3d.com</a>
-        </div>
-        <div>Free and MIT licensed. Built by a creator, for creators.</div>
+<footer class="footer">
+    <div class="footer-content">
+        <p>
+            <a class="repo-link" href="https://github.com/unreality3d-platform/migration-tools">GitHub</a> ·
+            <a class="repo-link" href="https://github.com/unreality3d-platform/migration-tools/releases/latest">Latest release</a> ·
+            <a class="repo-link" href="https://unreality3d.com">unreality3d.com</a>
+        </p>
+        <p>Free and MIT licensed. Built by a creator, for creators.</p>
     </div>
 </footer>
 
