@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Migration Tools — Unreality3D</title>
+<meta name="description" content="Free, open-source Unity editor tools for cleaning up missing scripts, broken references, and third-party Visual Scripting graphs when moving a project from one platform to another.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --ink: #1d1b2e;
+        --ink-soft: #2a2740;
+        --page: #f3f2f7;
+        --card: #ffffff;
+        --text: #25232f;
+        --muted: #5d5a6e;
+        --accent: #4b3fd1;
+        --accent-hover: #3c31b0;
+        --line: #e4e2ee;
+        --red: #e0483f;
+        --amber: #c9871a;
+        --blue: #3f78d1;
+        --display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--body);
+        line-height: 1.65;
+        color: var(--text);
+        background: var(--page);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+
+    :focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+    /* Hero */
+    .hero {
+        background: var(--ink);
+        color: #fff;
+        padding: 4.5rem 0 4rem;
+    }
+
+    .eyebrow {
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #b6b2d6;
+        margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: clamp(2.6rem, 6vw, 4rem);
+        line-height: 1.04;
+        letter-spacing: -0.01em;
+    }
+
+    .tricolor {
+        display: flex;
+        width: 132px;
+        height: 7px;
+        margin: 1.4rem 0 1.6rem;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .tricolor span { flex: 1; }
+    .tricolor .r { background: var(--red); }
+    .tricolor .y { background: var(--amber); }
+    .tricolor .b { background: var(--blue); }
+
+    .hero p.lead {
+        font-size: 1.2rem;
+        color: #dddaf0;
+        max-width: 60ch;
+    }
+
+    .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 2.2rem;
+        align-items: center;
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 9px;
+        padding: 0.85rem 1.5rem;
+        transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); color: #fff; }
+    .btn-ghost {
+        background: transparent;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.35);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    .hero .meta {
+        margin-top: 1.4rem;
+        font-size: 0.92rem;
+        color: #aaa6c9;
+    }
+
+    /* Sections */
+    section { padding: 3.6rem 0; }
+    section + section { border-top: 1px solid var(--line); }
+
+    h2 {
+        font-family: var(--display);
+        font-weight: 600;
+        font-size: 1.7rem;
+        letter-spacing: -0.01em;
+        margin-bottom: 1.2rem;
+        color: var(--ink);
+    }
+
+    .prose p { margin-bottom: 1.1rem; max-width: 68ch; color: var(--text); }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* Tool cards */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.4rem;
+    }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.6rem;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .tag {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0.22rem 0.6rem;
+        border-radius: 999px;
+        margin-bottom: 0.9rem;
+        color: #fff;
+    }
+    .tag-scan {
+        background: linear-gradient(90deg, var(--red) 0 33%, var(--amber) 33% 66%, var(--blue) 66% 100%);
+    }
+    .tag-red { background: var(--red); }
+    .tag-amber { background: var(--amber); }
+    .tag-vs { background: var(--ink-soft); }
+
+    .card h3 {
+        font-family: var(--display);
+        font-weight: 600;
+        font-size: 1.22rem;
+        margin-bottom: 0.55rem;
+        color: var(--ink);
+    }
+    .card p { color: var(--muted); font-size: 0.98rem; }
+    .card .note {
+        margin-top: 0.8rem;
+        font-size: 0.86rem;
+        color: var(--muted);
+        font-style: italic;
+    }
+
+    /* Install */
+    ol.steps {
+        max-width: 68ch;
+        margin: 0 0 1.4rem 1.2rem;
+        padding: 0;
+    }
+    ol.steps li { margin-bottom: 0.7rem; padding-left: 0.3rem; }
+
+    .callout {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--blue);
+        border-radius: 10px;
+        padding: 1.1rem 1.3rem;
+        max-width: 68ch;
+        color: var(--muted);
+        font-size: 0.95rem;
+    }
+
+    code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.88em;
+        background: #ece9f6;
+        padding: 0.1rem 0.4rem;
+        border-radius: 5px;
+        color: var(--ink);
+    }
+
+    /* Platform */
+    .platform { background: #ecebf3; }
+    .platform .wrap { display: block; }
+
+    /* Footer */
+    footer {
+        background: var(--ink);
+        color: #cecbe6;
+        padding: 2.4rem 0;
+        font-size: 0.92rem;
+    }
+    footer a { color: #fff; }
+    footer .foot-links { margin-bottom: 0.6rem; }
+    footer .foot-links a { margin-right: 1.4rem; }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(29,27,46,0.10);
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+    }
+</style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="wrap">
+        <div class="eyebrow">Open source · Unity 6</div>
+        <h1>Migration Tools</h1>
+        <div class="tricolor"><span class="r"></span><span class="y"></span><span class="b"></span></div>
+        <p class="lead">Editor tools for cleaning up missing scripts, broken references, and third-party Visual Scripting graphs when you move a Unity project from one platform to another.</p>
+        <div class="cta-row">
+            <a class="btn btn-primary" href="https://github.com/unreality3d-platform/migration-tools/releases/latest/download/MigrationTools.unitypackage">Download the latest .unitypackage</a>
+            <a class="btn btn-ghost" href="https://github.com/unreality3d-platform/migration-tools">View on GitHub</a>
+        </div>
+        <p class="meta">Free and MIT licensed. Works in Unity 6.</p>
+    </div>
+</header>
+
+<main>
+    <section class="why">
+        <div class="wrap prose">
+            <h2>Why these exist</h2>
+            <p>When a 3D content platform shuts down, or drops the features you built on, you are often left with a Unity project full of that platform's proprietary scripts. They throw errors all over the console, and a published build can load to a black screen because of them. Cleaning that up by hand, object by object, is slow and easy to get wrong.</p>
+            <p>These tools find what's broken, mark it so you can see exactly where it was before you remove anything, and clear out the parts that only ever worked on the old platform. The point is to get you back to a project you can actually work in, without starting from scratch.</p>
+            <p>This is not a magic port. Proprietary hooks that a platform embedded throughout a project can't all be untangled automatically. What these tools do is clean up what's left and save you real time, and they get better as more projects come through them.</p>
+            <p>They come from the Unreality3D Creator Dashboard, which comes built in to the free <a href="https://unreality3d.com/">Unreality3D</a> template Unity project. This is the same set, packaged on its own so you can run them in any Unity project.</p>
+        </div>
+    </section>
+
+    <section class="tools">
+        <div class="wrap">
+            <h2>What's inside</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="tag tag-scan">See it first</span>
+                    <h3>Scan and highlight problems</h3>
+                    <p>Before you change anything, light up every problem object right in the Scene view, color coded so nothing is a guess. Red is a missing script, yellow is a missing reference, blue is a placeholder. One button also selects them all in the Hierarchy and tells you how many it found.</p>
+                </div>
+                <div class="card">
+                    <span class="tag tag-red">Missing scripts</span>
+                    <h3>Missing scripts</h3>
+                    <p>Replace missing scripts with visible placeholder components, so you can see where each one was before you decide what to do with it. When you're ready, remove the placeholders, or clear missing scripts straight out of your scenes and prefabs.</p>
+                </div>
+                <div class="card">
+                    <span class="tag tag-amber">Missing references</span>
+                    <h3>Missing references</h3>
+                    <p>Find object references that went missing inside components that still exist, track them with a placeholder, and jump straight to them in the Hierarchy to rewire. Clear the placeholders when you're done.</p>
+                </div>
+                <div class="card">
+                    <span class="tag tag-vs">Visual Scripting</span>
+                    <h3>Broken Visual Scripting graphs</h3>
+                    <p>Clear Visual Scripting graphs that are full of another platform's node types, the kind that cause deserialization errors and broken builds. It works on the open scene and across a whole folder of imported assets and prefabs in one pass, and it clears the broken graphs without deleting your GameObjects.</p>
+                    <p class="note">Set up for Spatial out of the box. Adding another platform is a one-line change in the code, using the prefix shown in the red "Script Missing" nodes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="install">
+        <div class="wrap">
+            <h2>Install</h2>
+            <ol class="steps">
+                <li>Download the latest <a href="https://github.com/unreality3d-platform/migration-tools/releases/latest/download/MigrationTools.unitypackage">MigrationTools.unitypackage</a>.</li>
+                <li>In Unity, go to <strong>Assets &gt; Import Package &gt; Custom Package</strong>, pick the file, and import.</li>
+                <li>Open the tools from <strong>Tools &gt; Unreality3D &gt; Migration Tools</strong>.</li>
+            </ol>
+            <div class="callout">
+                Works in Unity 6. Every tool can be undone with Ctrl+Z. The two Visual Scripting tools need Unity's Visual Scripting package (<code>com.unity.visualscripting</code>). Projects coming from platforms that used visual scripting usually already have it, and if it isn't installed, those two tools show a note while everything else still works.
+            </div>
+        </div>
+    </section>
+
+    <section class="platform">
+        <div class="wrap prose">
+            <h2>Where these come from</h2>
+            <p>Migration Tools come out of Unreality3D, a free Unity 6 publishing platform I build as a creator, for creators. If the platform you left took your interactivity with it, the Creator Dashboard is intended to give a lot of it back without code, things like grabbing, climbing, and riding, along with multiplayer and a way to share your work at a real web address.</p>
+            <p>If that sounds useful, you can take a look at <a href="https://unreality3d.com">unreality3d.com</a>.</p>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="wrap">
+        <div class="foot-links">
+            <a href="https://github.com/unreality3d-platform/migration-tools">GitHub</a>
+            <a href="https://github.com/unreality3d-platform/migration-tools/releases/latest">Latest release</a>
+            <a href="https://unreality3d.com">unreality3d.com</a>
+        </div>
+        <div>Free and MIT licensed. Built by a creator, for creators.</div>
+    </div>
+</footer>
+
+</body>
+</html>
